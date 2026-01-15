@@ -42,3 +42,4 @@ derby.log
 *.dat
 *.lck
 *.ctrl
+.idea/
