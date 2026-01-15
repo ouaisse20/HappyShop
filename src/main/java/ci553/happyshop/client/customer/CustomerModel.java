@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Comparator;
 
 /**
  * TODO
@@ -23,10 +24,10 @@ import java.util.Map;
 public class CustomerModel {
     public CustomerView cusView;
     public DatabaseRW databaseRW; //Interface type, not specific implementation
-                                  //Benefits: Flexibility: Easily change the database implementation.
+    //Benefits: Flexibility: Easily change the database implementation.
 
-    private Product theProduct =null; // product found from search
-    private ArrayList<Product> trolley =  new ArrayList<>(); // a list of products in trolley
+    private Product theProduct = null; // product found from search
+    private ArrayList<Product> trolley = new ArrayList<>(); // a list of products in trolley
 
     // Four UI elements to be passed to CustomerView for display updates.
     private String imageName = "imageHolder.jpg";                // Image to show in product preview (Search Page)
@@ -62,22 +63,27 @@ public class CustomerModel {
         updateView();
     }
 
-    void addToTrolley(){
-        if(theProduct!= null){
+    void addToTrolley() {
+        if (theProduct != null) {
 
-            // trolley.add(theProduct) — Product is appended to the end of the trolley.
-            // To keep the trolley organized, add code here or call a method that:
-            //TODO
-            // 1. Merges items with the same product ID (combining their quantities).
-            // 2. Sorts the products in the trolley by product ID.
+            // Add the selected product
             trolley.add(theProduct);
-            displayTaTrolley = ProductListFormatter.buildString(trolley); //build a String for trolley so that we can show it
-        }
-        else{
+
+            // 1) Merge items with the same product ID (combining their quantities)
+            trolley = groupProductsById(trolley);
+
+            // 2) Sort the products in the trolley by product ID
+            trolley.sort(Comparator.comparing(Product::getProductId));
+
+            // Build a String for trolley so that we can show it
+            displayTaTrolley = ProductListFormatter.buildString(trolley);
+
+        } else {
             displayLaSearchResult = "Please search for an available product before adding it to the trolley";
             System.out.println("must search and get an available product before add to trolley");
         }
-        displayTaReceipt=""; // Clear receipt to switch back to trolleyPage (receipt shows only when not empty)
+
+        displayTaReceipt = ""; // Clear receipt to switch back to trolleyPage (receipt shows only when not empty)
         updateView();
     }
 
@@ -157,6 +163,7 @@ public class CustomerModel {
         displayTaTrolley="";
         updateView();
     }
+
     void closeReceipt(){
         displayTaReceipt="";
     }
@@ -175,9 +182,6 @@ public class CustomerModel {
         }
         cusView.update(imageName, displayLaSearchResult, displayTaTrolley,displayTaReceipt);
     }
-     // extra notes:
-     //Path.toUri(): Converts a Path object (a file or a directory path) to a URI object.
-     //File.toURI(): Converts a File object (a file on the filesystem) to a URI object
 
     //for test only
     public ArrayList<Product> getTrolley() {
