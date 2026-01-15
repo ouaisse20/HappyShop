@@ -43,3 +43,7 @@ derby.log
 *.lck
 *.ctrl
 .idea/
+# Runtime order data
+orders/ordered/
+orders/orderCounter.txt
+git add .gitignore
